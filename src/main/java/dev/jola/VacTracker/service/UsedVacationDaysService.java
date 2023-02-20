@@ -1,10 +1,12 @@
 package dev.jola.VacTracker.service;
 
+import dev.jola.VacTracker.dto.UsedVacationDaysDto;
 import dev.jola.VacTracker.dto.VacationDaysPeriodDto;
 import dev.jola.VacTracker.entity.Employee;
 import dev.jola.VacTracker.entity.UsedVacationDays;
 import dev.jola.VacTracker.exception.EmployeeNotFoundException;
 import dev.jola.VacTracker.helper.UsedVacationDaysHelper;
+import dev.jola.VacTracker.mapper.UsedVacationDaysMapper;
 import dev.jola.VacTracker.repository.EmployeeRepository;
 import dev.jola.VacTracker.repository.UsedVacationDaysRepository;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -29,11 +31,16 @@ public class UsedVacationDaysService {
     private final EmployeeRepository employeeRepository;
 
     private final MongoTemplate mongoTemplate;
+    private final UsedVacationDaysMapper usedVacationDaysMapper;
 
-    public UsedVacationDaysService(UsedVacationDaysRepository usedVacationDaysRepository, MongoTemplate mongoTemplate,EmployeeRepository employeeRepository) {
+    public UsedVacationDaysService(UsedVacationDaysRepository usedVacationDaysRepository,
+                                   MongoTemplate mongoTemplate,
+                                   EmployeeRepository employeeRepository,
+                                   UsedVacationDaysMapper usedVacationDaysMapper) {
         this.usedVacationDaysRepository = usedVacationDaysRepository;
         this.mongoTemplate = mongoTemplate;
         this.employeeRepository = employeeRepository;
+        this.usedVacationDaysMapper = usedVacationDaysMapper;
     }
 
     public void saveFromFile(MultipartFile file) {
@@ -142,6 +149,26 @@ public class UsedVacationDaysService {
         }
 
         return finalList;
+
+    }
+
+    public UsedVacationDaysDto saveRecord(String email, UsedVacationDaysDto dto) throws Exception{
+
+        try{
+
+            UsedVacationDays entity = usedVacationDaysRepository.insert(usedVacationDaysMapper.toEntity(dto));
+            entity.setEmployeeEmail(email);
+
+
+            mongoTemplate.update(Employee.class).matching(Criteria.where("email").is(entity.getEmployeeEmail()))
+                    .apply(new Update().push("usedVacationDaysIds").value(entity)).first();
+
+            return usedVacationDaysMapper.toDto(entity);
+        }catch (Exception e){
+
+            throw new Exception(e);
+
+        }
 
     }
 }
