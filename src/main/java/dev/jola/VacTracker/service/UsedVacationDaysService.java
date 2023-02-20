@@ -32,22 +32,25 @@ public class UsedVacationDaysService {
 
     private final MongoTemplate mongoTemplate;
     private final UsedVacationDaysMapper usedVacationDaysMapper;
+    private final UsedVacationDaysHelper usedVacationDaysHelper;
 
     public UsedVacationDaysService(UsedVacationDaysRepository usedVacationDaysRepository,
                                    MongoTemplate mongoTemplate,
                                    EmployeeRepository employeeRepository,
-                                   UsedVacationDaysMapper usedVacationDaysMapper) {
+                                   UsedVacationDaysMapper usedVacationDaysMapper,
+                                   UsedVacationDaysHelper usedVacationDaysHelper) {
         this.usedVacationDaysRepository = usedVacationDaysRepository;
         this.mongoTemplate = mongoTemplate;
         this.employeeRepository = employeeRepository;
         this.usedVacationDaysMapper = usedVacationDaysMapper;
+        this.usedVacationDaysHelper = usedVacationDaysHelper;
     }
 
     public void saveFromFile(MultipartFile file) {
 
         try{
 
-            List<UsedVacationDays> days = UsedVacationDaysHelper.csvToUsedVacationDays(file.getInputStream());
+            List<UsedVacationDays> days = usedVacationDaysHelper.csvToUsedVacationDays(file.getInputStream());
 
             for (UsedVacationDays record : days){
 

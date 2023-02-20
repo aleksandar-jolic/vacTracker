@@ -16,20 +16,22 @@ public class VacationPerYearService {
 
 
     private final VacationPerYearRepository vacationPerYearRepository;
-
-
     private final MongoTemplate mongoTemplate;
+    private final VacationPerYearHelper vacationPerYearHelper;
 
-    public VacationPerYearService(VacationPerYearRepository vacationPerYearRepository, MongoTemplate mongoTemplate) {
+    public VacationPerYearService(VacationPerYearRepository vacationPerYearRepository,
+                                  MongoTemplate mongoTemplate,
+                                  VacationPerYearHelper vacationPerYearHelper) {
         this.vacationPerYearRepository = vacationPerYearRepository;
         this.mongoTemplate = mongoTemplate;
+        this.vacationPerYearHelper = vacationPerYearHelper;
     }
 
     public void saveFromFile(MultipartFile file) {
 
         try{
 
-            List<VacationPerYear> days = VacationPerYearHelper.csvToVacationPerYear(file.getInputStream());
+            List<VacationPerYear> days = vacationPerYearHelper.csvToVacationPerYear(file.getInputStream());
 
             for (VacationPerYear record : days){
 

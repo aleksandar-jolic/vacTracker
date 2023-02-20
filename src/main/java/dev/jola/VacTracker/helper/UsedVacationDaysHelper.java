@@ -5,17 +5,21 @@ import dev.jola.VacTracker.entity.UsedVacationDays;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.springframework.stereotype.Component;
+
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+
+@Component
 public class UsedVacationDaysHelper {
 
     static String[] HEADERs={"Employee","Vacation start date","Vacation end date"};
 
-    public static List<UsedVacationDays> csvToUsedVacationDays(InputStream inputStream) {
+    public  List<UsedVacationDays> csvToUsedVacationDays(InputStream inputStream) {
 
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
              CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim());) {

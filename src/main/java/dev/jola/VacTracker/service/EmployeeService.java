@@ -25,13 +25,16 @@ public class EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final UsedVacationDaysRepository usedVacationDaysRepository;
     private final VacationPerYearRepository vacationPerYearRepository;
+    private  final EmployeeHelper employeeHelper;
 
     public EmployeeService(EmployeeRepository employeeRepository,
                            UsedVacationDaysRepository usedVacationDaysRepository,
-                           VacationPerYearRepository vacationPerYearRepository) {
+                           VacationPerYearRepository vacationPerYearRepository,
+                           EmployeeHelper employeeHelper) {
         this.employeeRepository = employeeRepository;
         this.usedVacationDaysRepository = usedVacationDaysRepository;
         this.vacationPerYearRepository = vacationPerYearRepository;
+        this.employeeHelper = employeeHelper;
     }
 
     public void saveFromFile(MultipartFile file) {
@@ -39,7 +42,7 @@ public class EmployeeService {
         try {
 
 
-            List<Employee> employees = EmployeeHelper.csvToEmployees(file.getInputStream());
+            List<Employee> employees = employeeHelper.csvToEmployees(file.getInputStream());
 
             employeeRepository.saveAll(employees);
 

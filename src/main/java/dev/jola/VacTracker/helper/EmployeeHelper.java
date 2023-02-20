@@ -5,16 +5,17 @@ import dev.jola.VacTracker.entity.Employee;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
 
-
+@Component
 public class EmployeeHelper {
 
-    public static List<Employee> csvToEmployees(InputStream inputStream) {
+    public  List<Employee> csvToEmployees(InputStream inputStream) {
 
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
              CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.withHeader("Employee Email","Employee Password").withIgnoreHeaderCase().withTrim());) {

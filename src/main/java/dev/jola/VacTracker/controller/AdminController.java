@@ -23,11 +23,15 @@ public class AdminController {
     private final UsedVacationDaysService usedVacationDaysService;
 
     private final VacationPerYearService vacationPerYearService;
-
-    public AdminController(EmployeeService employeeService, UsedVacationDaysService usedVacationDaysService, VacationPerYearService vacationPerYearService) {
+    private final FileValidator fileValidator;
+    public AdminController(EmployeeService employeeService,
+                           UsedVacationDaysService usedVacationDaysService,
+                           VacationPerYearService vacationPerYearService,
+                           FileValidator fileValidator) {
         this.employeeService = employeeService;
         this.usedVacationDaysService = usedVacationDaysService;
         this.vacationPerYearService = vacationPerYearService;
+        this.fileValidator = fileValidator;
     }
 
     @PostMapping("/employees/upload")
@@ -35,7 +39,7 @@ public class AdminController {
 
         String message ="";
 
-        if(FileValidator.isCSVFormat(file)){
+        if(fileValidator.isCSVFormat(file)){
 
             try{
 
@@ -69,7 +73,7 @@ public class AdminController {
 
         String message ="";
 
-        if(FileValidator.isCSVFormat(file)){
+        if(fileValidator.isCSVFormat(file)){
 
             try{
                 usedVacationDaysService.saveFromFile(file);
@@ -102,7 +106,7 @@ public class AdminController {
 
         String message ="";
 
-        if(FileValidator.isCSVFormat(file)){
+        if(fileValidator.isCSVFormat(file)){
 
             try{
                 vacationPerYearService.saveFromFile(file);
