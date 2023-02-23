@@ -16,7 +16,7 @@ public class AOP {
     @Before("execution(* dev.jola.VacTracker.controller.*.*(..))")
     public void before(JoinPoint joinPoint) {
 
-        System.out.println("\n Pokrenuta je metoda " + joinPoint.getSignature().getName());
+        System.out.println("\n Method " + joinPoint.getSignature().getName() + "is started!");
         System.out.println("Arguments: " + Arrays.toString(joinPoint.getArgs()) + "\n");
 
     }

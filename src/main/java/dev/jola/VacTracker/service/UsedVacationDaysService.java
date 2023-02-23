@@ -2,12 +2,12 @@ package dev.jola.VacTracker.service;
 
 import dev.jola.VacTracker.dto.UsedVacationDaysDto;
 import dev.jola.VacTracker.dto.VacationDaysPeriodDto;
-import dev.jola.VacTracker.entity.Employee;
+import dev.jola.VacTracker.entity.User;
 import dev.jola.VacTracker.entity.UsedVacationDays;
 import dev.jola.VacTracker.exception.EmployeeNotFoundException;
 import dev.jola.VacTracker.helper.UsedVacationDaysHelper;
 import dev.jola.VacTracker.mapper.UsedVacationDaysMapper;
-import dev.jola.VacTracker.repository.EmployeeRepository;
+import dev.jola.VacTracker.repository.UserRepository;
 import dev.jola.VacTracker.repository.UsedVacationDaysRepository;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -28,7 +28,7 @@ public class UsedVacationDaysService {
 
     private final UsedVacationDaysRepository usedVacationDaysRepository;
 
-    private final EmployeeRepository employeeRepository;
+    private final UserRepository userRepository;
 
     private final MongoTemplate mongoTemplate;
     private final UsedVacationDaysMapper usedVacationDaysMapper;
@@ -36,12 +36,12 @@ public class UsedVacationDaysService {
 
     public UsedVacationDaysService(UsedVacationDaysRepository usedVacationDaysRepository,
                                    MongoTemplate mongoTemplate,
-                                   EmployeeRepository employeeRepository,
+                                   UserRepository userRepository,
                                    UsedVacationDaysMapper usedVacationDaysMapper,
                                    UsedVacationDaysHelper usedVacationDaysHelper) {
         this.usedVacationDaysRepository = usedVacationDaysRepository;
         this.mongoTemplate = mongoTemplate;
-        this.employeeRepository = employeeRepository;
+        this.userRepository = userRepository;
         this.usedVacationDaysMapper = usedVacationDaysMapper;
         this.usedVacationDaysHelper = usedVacationDaysHelper;
     }
@@ -56,7 +56,7 @@ public class UsedVacationDaysService {
 
                 usedVacationDaysRepository.insert(record);
 
-                mongoTemplate.update(Employee.class).matching(Criteria.where("email").is(record.getEmployeeEmail()))
+                mongoTemplate.update(User.class).matching(Criteria.where("email").is(record.getEmployeeEmail()))
                         .apply(new Update().push("usedVacationDaysIds").value(record)).first();
 
 
@@ -73,7 +73,7 @@ public class UsedVacationDaysService {
     public List<VacationDaysPeriodDto> getListOfUsedVacationDays(String email, VacationDaysPeriodDto period) throws EmployeeNotFoundException {
 
 
-        if(!employeeRepository.existsByEmail(email)){
+        if(!userRepository.existsByEmail(email)){
 
             throw new EmployeeNotFoundException("Employee record does not exist.");
 
@@ -163,7 +163,7 @@ public class UsedVacationDaysService {
             entity.setEmployeeEmail(email);
 
 
-            mongoTemplate.update(Employee.class).matching(Criteria.where("email").is(entity.getEmployeeEmail()))
+            mongoTemplate.update(User.class).matching(Criteria.where("email").is(entity.getEmployeeEmail()))
                     .apply(new Update().push("usedVacationDaysIds").value(entity)).first();
 
             return usedVacationDaysMapper.toDto(entity);

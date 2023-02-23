@@ -1,10 +1,11 @@
 package dev.jola.VacTracker.helper;
 
 
-import dev.jola.VacTracker.entity.Employee;
+import dev.jola.VacTracker.entity.User;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
@@ -13,14 +14,21 @@ import java.util.List;
 
 
 @Component
-public class EmployeeHelper {
+public class UserHelper {
 
-    public  List<Employee> csvToEmployees(InputStream inputStream) {
+    private final PasswordEncoder passwordEncoder;
+
+    public UserHelper(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
+
+
+    public  List<User> csvToEmployees(InputStream inputStream) {
 
         try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
              CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT.withHeader("Employee Email","Employee Password").withIgnoreHeaderCase().withTrim());) {
 
-            List<Employee> employees = new ArrayList<Employee>();
+            List<User> employees = new ArrayList<User>();
 
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
 
@@ -42,17 +50,13 @@ public class EmployeeHelper {
 
                 }
                 else{
-                    Employee record = new Employee();
+                    User record = new User();
 
                     record.setEmail(csvRecord.get("Employee Email"));
-                    record.setPassword(csvRecord.get("Employee Password"));
+                    record.setPassword(passwordEncoder.encode(csvRecord.get("Employee Password")) );
                     record.setVacationPerYearIds(new ArrayList<>());
                     record.setUsedVacationDaysIds(new ArrayList<>());
-                    System.out.println(record);
-                    System.out.println("///////////////////////////");
-                    System.out.println("///////////////////////");
-
-
+                    record.setRole("USER");
 
                     employees.add(record);
 

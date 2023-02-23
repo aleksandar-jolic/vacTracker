@@ -1,11 +1,12 @@
 package dev.jola.VacTracker.service;
 
 import dev.jola.VacTracker.dto.EmployeeVacationDaysDto;
-import dev.jola.VacTracker.entity.Employee;
 import dev.jola.VacTracker.entity.UsedVacationDays;
+import dev.jola.VacTracker.entity.User;
+import dev.jola.VacTracker.entity.VacationPerYear;
 import dev.jola.VacTracker.exception.EmployeeNotFoundException;
-import dev.jola.VacTracker.helper.EmployeeHelper;
-import dev.jola.VacTracker.repository.EmployeeRepository;
+import dev.jola.VacTracker.helper.UserHelper;
+import dev.jola.VacTracker.repository.UserRepository;
 import dev.jola.VacTracker.repository.UsedVacationDaysRepository;
 import dev.jola.VacTracker.repository.VacationPerYearRepository;
 import org.springframework.stereotype.Service;
@@ -16,25 +17,26 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
-public class EmployeeService {
+public class UserService {
 
 
-    private final EmployeeRepository employeeRepository;
+    private final UserRepository userRepository;
     private final UsedVacationDaysRepository usedVacationDaysRepository;
     private final VacationPerYearRepository vacationPerYearRepository;
-    private  final EmployeeHelper employeeHelper;
+    private  final UserHelper userHelper;
 
-    public EmployeeService(EmployeeRepository employeeRepository,
-                           UsedVacationDaysRepository usedVacationDaysRepository,
-                           VacationPerYearRepository vacationPerYearRepository,
-                           EmployeeHelper employeeHelper) {
-        this.employeeRepository = employeeRepository;
+    public UserService(UserRepository userRepository,
+                       UsedVacationDaysRepository usedVacationDaysRepository,
+                       VacationPerYearRepository vacationPerYearRepository,
+                       UserHelper userHelper) {
+        this.userRepository = userRepository;
         this.usedVacationDaysRepository = usedVacationDaysRepository;
         this.vacationPerYearRepository = vacationPerYearRepository;
-        this.employeeHelper = employeeHelper;
+        this.userHelper = userHelper;
     }
 
     public void saveFromFile(MultipartFile file) {
@@ -42,9 +44,9 @@ public class EmployeeService {
         try {
 
 
-            List<Employee> employees = employeeHelper.csvToEmployees(file.getInputStream());
+            List<User> employees = userHelper.csvToEmployees(file.getInputStream());
 
-            employeeRepository.saveAll(employees);
+            userRepository.saveAll(employees);
 
         } catch (Exception e) {
 
@@ -59,7 +61,8 @@ public class EmployeeService {
     public EmployeeVacationDaysDto getEmployeeVacationDaysInfo(String email, int year) throws EmployeeNotFoundException{
 
 
-            if(!employeeRepository.existsByEmail(email)){
+
+            if(!userRepository.existsByEmail(email)){
 
                     throw new EmployeeNotFoundException("Employee record does not exist.");
 
@@ -69,7 +72,17 @@ public class EmployeeService {
 
         List<UsedVacationDays> listOfUsedVacationDays = usedVacationDaysRepository.findUsedVacationDaysByEmployeeEmail(email);
 
-        int totalVacationDays = vacationPerYearRepository.findVacationPerYearByEmployeeEmailAndYear(email, year).getTotalVacationDays();
+        Optional<VacationPerYear> vacationPerYear = vacationPerYearRepository.findVacationPerYearByEmployeeEmailAndYear(email, year);
+
+        int totalVacationDays = 0;
+
+
+
+       if(vacationPerYear.isPresent()){
+
+           totalVacationDays =  vacationPerYear.get().getTotalVacationDays();
+       }
+
 
         int usedDays = 0;
         String startDate = "";

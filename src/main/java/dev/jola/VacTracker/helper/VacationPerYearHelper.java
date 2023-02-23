@@ -54,10 +54,6 @@ public class VacationPerYearHelper {
 
 
 
-                    System.out.println(record);
-                    System.out.println("///////////////////////////");
-                    System.out.println("///////////////////////");
-
 
 
                     days.add(record);

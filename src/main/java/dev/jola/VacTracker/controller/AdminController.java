@@ -2,7 +2,7 @@ package dev.jola.VacTracker.controller;
 
 
 import dev.jola.VacTracker.helper.FileValidator;
-import dev.jola.VacTracker.service.EmployeeService;
+import dev.jola.VacTracker.service.UserService;
 import dev.jola.VacTracker.service.UsedVacationDaysService;
 import dev.jola.VacTracker.service.VacationPerYearService;
 import org.springframework.http.HttpStatus;
@@ -18,17 +18,17 @@ import org.springframework.web.multipart.MultipartFile;
 public class AdminController {
 
 
-    private final EmployeeService employeeService;
+    private final UserService userService;
 
     private final UsedVacationDaysService usedVacationDaysService;
 
     private final VacationPerYearService vacationPerYearService;
     private final FileValidator fileValidator;
-    public AdminController(EmployeeService employeeService,
+    public AdminController(UserService userService,
                            UsedVacationDaysService usedVacationDaysService,
                            VacationPerYearService vacationPerYearService,
                            FileValidator fileValidator) {
-        this.employeeService = employeeService;
+        this.userService = userService;
         this.usedVacationDaysService = usedVacationDaysService;
         this.vacationPerYearService = vacationPerYearService;
         this.fileValidator = fileValidator;
@@ -43,7 +43,7 @@ public class AdminController {
 
             try{
 
-                employeeService.saveFromFile(file);
+                userService.saveFromFile(file);
 
                 message="Uploaded the file successfully: " +file.getOriginalFilename();
                 return ResponseEntity.status(HttpStatus.OK).body(message);

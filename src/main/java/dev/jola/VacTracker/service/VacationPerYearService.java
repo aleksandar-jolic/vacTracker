@@ -1,6 +1,6 @@
 package dev.jola.VacTracker.service;
 
-import dev.jola.VacTracker.entity.Employee;
+import dev.jola.VacTracker.entity.User;
 import dev.jola.VacTracker.entity.VacationPerYear;
 import dev.jola.VacTracker.helper.VacationPerYearHelper;
 import dev.jola.VacTracker.repository.VacationPerYearRepository;
@@ -37,7 +37,7 @@ public class VacationPerYearService {
 
                 vacationPerYearRepository.insert(record);
 
-                mongoTemplate.update(Employee.class).matching(Criteria.where("email").is(record.getEmployeeEmail()))
+                mongoTemplate.update(User.class).matching(Criteria.where("email").is(record.getEmployeeEmail()))
                         .apply(new Update().push("vacationPerYearIds").value(record)).first();
 
 
